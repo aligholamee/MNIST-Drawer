@@ -90,4 +90,31 @@ def decoder(sampled_z, keep_prob):
         img = tf.reshape(x, shape=[-1, 28, 28])
 
         return img
-        
+
+CODED_IMG, MN, SD = encoder(X_INPUT, KEEP_PROB)
+DECODED_IMG = decoder(CODED_IMG, KEEP_PROB)
+
+# Compute the image reconstruction loss
+UN_RESHAPED = tf.reshape(DECODED_IMG, [-1, 28*28])
+IMG_LOSS = tf.reduce_sum(tf.squared_difference(UN_RESHAPED, Y_FLATTENED), 1)
+LATENT_LOSS = -0.5 * tf.reduce_sum(1.0 + 2.0*SD - tf.square(MN) - tf.expo(2.0*SD), 1)
+LOSS = tf.reduce_mean(IMG_LOSS, LATENT_LOSS)
+OPTIMIZER = tf.train.AdamOptimizer(0.0005).minimize(LOSS)
+
+# Run the session
+SESS = tf.Session()
+SESS.run(tf.global_variables_initializer())
+
+# Take the minibatches and feed the session dicitionary
+for i in range(30000):
+    BATCH = [np.reshape(b, [28, 28]) for b in mnist.train.next_batch(batch_size=BATCH_SIZE)[0]]
+    SESS.run(OPTIMIZER, feed_dict={X_INPUT: BATCH, Y_FLATTENED: BATCH, KEEP_PROB: 0.8})
+
+    if not i % 200:
+        ls, d, i_ls, d_ls, mu, sigma = SESS.run([LOSS, DECODED_IMG, IMG_LOSS, LATENT_LOSS, MN, SD],
+        feed_dict={X_INPUT: BATCH, Y_FLATTENED: BATCH, KEEP_PROB: 1.0})
+        plt.imshow(np.reshape(BATCH[0], [28, 28]), cmap='gray')
+        plt.show()
+        plt.imshow(d[0], cmap='gray')
+        plt.show()
+        print(i, ls, np.mean(i_ls), np.mean(d_ls))
