@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import tensorflow.examples.tutorials.mnist as input_data
 from tensorflow.examples.tutorials.mnist import mnist
 from tensorflow.contrib.learn.python.learn.datasets.mnist import read_data_sets
+from tensorflow.contrib.learn.datasets.mnist import next_batch
 
 # Load the dataset
 MNIST = read_data_sets('MNIST_data')
@@ -97,7 +98,7 @@ DECODED_IMG = decoder(CODED_IMG, KEEP_PROB)
 # Compute the image reconstruction loss
 UN_RESHAPED = tf.reshape(DECODED_IMG, [-1, 28*28])
 IMG_LOSS = tf.reduce_sum(tf.squared_difference(UN_RESHAPED, Y_FLATTENED), 1)
-LATENT_LOSS = -0.5 * tf.reduce_sum(1.0 + 2.0*SD - tf.square(MN) - tf.expo(2.0*SD), 1)
+LATENT_LOSS = -0.5 * tf.reduce_sum(1.0 + 2.0*SD - tf.square(MN) - tf.exp(2.0*SD), 1)
 LOSS = tf.reduce_mean(IMG_LOSS, LATENT_LOSS)
 OPTIMIZER = tf.train.AdamOptimizer(0.0005).minimize(LOSS)
 
@@ -107,7 +108,7 @@ SESS.run(tf.global_variables_initializer())
 
 # Take the minibatches and feed the session dicitionary
 for i in range(30000):
-    BATCH = [np.reshape(b, [28, 28]) for b in mnist.train.next_batch(batch_size=BATCH_SIZE)[0]]
+    BATCH = [np.reshape(b, [28, 28]) for b in next_batch(batch_size=BATCH_SIZE)[0]]
     SESS.run(OPTIMIZER, feed_dict={X_INPUT: BATCH, Y_FLATTENED: BATCH, KEEP_PROB: 0.8})
 
     if not i % 200:
