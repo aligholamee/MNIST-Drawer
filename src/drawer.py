@@ -68,3 +68,26 @@ def encoder(x_input, keep_prob):
 
         return z, x_dense, sd
 
+def decoder(sampled_z, keep_prob):
+    """
+        Regenerate an image using coded images
+    """
+    with tf.variable_scope("decoder"):
+        x = tf.layers.dense(sampled_z, units=INPUTS_DECODER, activation=tf.nn.leaky_relu)
+        x = tf.layers.dense(x, units=INPUTS_DECODER*2 + 1, activation=tf.nn.leaky_relu)
+
+        x = tf.reshape(x, RESHAPED_DIM)
+
+        # TRANSPOSED CONV 1-3 + DROPOUTS
+        x = tf.layers.conv2d_transpose(x, filters=64, kernel_size=4, strides=2, padding='same', activation=tf.nn.relu)
+        x = tf.nn.dropout(x, keep_prob)
+        x = tf.layers.conv2d_transpose(x, filters=64, kernel_size=4, strides=1, padding='same', activation=tf.nn.relu)
+        x = tf.nn.dropout(x, keep_prob)
+        x = tf.layers.conv2d_transpose(x, filters=64, kernel_size=4, strides=1, padding='same', activation=tf.nn.relu)
+
+        x = tf.contrib.layers.flatten(x)
+        x = tf.layers.dense(x, units=28*28, activation=tf.nn.sigmoid)
+        img = tf.reshape(x, shape=[-1, 28, 28])
+
+        return img
+        
