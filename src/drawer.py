@@ -30,3 +30,8 @@ Y_OUTPUT = tf.placeholder(dtype=tf.float32, shape=[None, 28, 28], name='Y')
 Y_FLATTENED = tf.reshape(Y_OUTPUT, shape=[-1, 28*28])
 KEEP_PROB = tf.placeholder(dtype=tf.float32, shape=(), name='KEEP_PROB')
 
+# Essential constants
+DEC_IN_CHANNELS = 1
+NUM_LATENS = 8
+RESHAPED_DIM = [-1, 7, 7, DEC_IN_CHANNELS]
+INPUTS_DECODER = 49 * DEC_IN_CHANNELS / 2
