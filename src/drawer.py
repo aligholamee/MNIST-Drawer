@@ -12,13 +12,10 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-import tensorflow.examples.tutorials.mnist as input_data
-from tensorflow.examples.tutorials.mnist import mnist
-from tensorflow.contrib.learn.python.learn.datasets.mnist import read_data_sets
-from tensorflow.contrib.learn.datasets.mnist import next_batch
+from tensorflow.examples.tutorials.mnist import input_data
 
 # Load the dataset
-MNIST = read_data_sets('MNIST_data')
+myData = input_data.read_data_sets('MNIST_data')
 
 # Reset graph sessions on the RAM
 tf.reset_default_graph()
@@ -35,7 +32,7 @@ KEEP_PROB = tf.placeholder(dtype=tf.float32, shape=(), name='KEEP_PROB')
 DEC_IN_CHANNELS = 1
 NUM_LATENS = 8
 RESHAPED_DIM = [-1, 7, 7, DEC_IN_CHANNELS]
-INPUTS_DECODER = 49 * DEC_IN_CHANNELS / 2
+INPUTS_DECODER = 24
 
 def encoder(x_input, keep_prob):
     """
@@ -63,7 +60,7 @@ def encoder(x_input, keep_prob):
         
         x = tf.contrib.layers.flatten(x)
         x_dense = tf.layers.dense(x, units=NUM_LATENS)
-        sd = 0.5 * x_dense
+        sd = 0.5 * tf.layers.dense(x, units=NUM_LATENS)
         epsilon = tf.random_normal(tf.stack([tf.shape(x)[0], NUM_LATENS]))
         z = x_dense + tf.multiply(epsilon, tf.exp(sd))
 
@@ -99,7 +96,7 @@ DECODED_IMG = decoder(CODED_IMG, KEEP_PROB)
 UN_RESHAPED = tf.reshape(DECODED_IMG, [-1, 28*28])
 IMG_LOSS = tf.reduce_sum(tf.squared_difference(UN_RESHAPED, Y_FLATTENED), 1)
 LATENT_LOSS = -0.5 * tf.reduce_sum(1.0 + 2.0*SD - tf.square(MN) - tf.exp(2.0*SD), 1)
-LOSS = tf.reduce_mean(IMG_LOSS, LATENT_LOSS)
+LOSS = tf.reduce_mean(IMG_LOSS + LATENT_LOSS)
 OPTIMIZER = tf.train.AdamOptimizer(0.0005).minimize(LOSS)
 
 # Run the session
@@ -108,12 +105,12 @@ SESS.run(tf.global_variables_initializer())
 
 # Take the minibatches and feed the session dicitionary
 for i in range(30000):
-    BATCH = [np.reshape(b, [28, 28]) for b in next_batch(batch_size=BATCH_SIZE)[0]]
-    SESS.run(OPTIMIZER, feed_dict={X_INPUT: BATCH, Y_FLATTENED: BATCH, KEEP_PROB: 0.8})
+    BATCH = [np.reshape(b, [28, 28]) for b in myData.train.next_batch(batch_size=BATCH_SIZE)[0]]
+    SESS.run(OPTIMIZER, feed_dict={X_INPUT: BATCH, Y_OUTPUT: BATCH, KEEP_PROB: 0.8})
 
     if not i % 200:
         ls, d, i_ls, d_ls, mu, sigma = SESS.run([LOSS, DECODED_IMG, IMG_LOSS, LATENT_LOSS, MN, SD],
-        feed_dict={X_INPUT: BATCH, Y_FLATTENED: BATCH, KEEP_PROB: 1.0})
+        feed_dict={X_INPUT: BATCH, Y_OUTPUT: BATCH, KEEP_PROB: 1.0})
         plt.imshow(np.reshape(BATCH[0], [28, 28]), cmap='gray')
         plt.show()
         plt.imshow(d[0], cmap='gray')
