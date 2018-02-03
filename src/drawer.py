@@ -111,10 +111,10 @@ for i in range(30000):
     if not i % 200:
         ls, d, i_ls, d_ls, mu, sigma = SESS.run([LOSS, DECODED_IMG, IMG_LOSS, LATENT_LOSS, MN, SD],
         feed_dict={X_INPUT: BATCH, Y_OUTPUT: BATCH, KEEP_PROB: 1.0})
-        plt.imshow(np.reshape(BATCH[0], [28, 28]), cmap='gray')
-        plt.show()
-        plt.imshow(d[0], cmap='gray')
-        plt.show()
+        # plt.imshow(np.reshape(BATCH[0], [28, 28]), cmap='gray')
+        # plt.show()
+        # plt.imshow(d[0], cmap='gray')
+        # plt.show()
         print(i, ls, np.mean(i_ls), np.mean(d_ls))
 
 
