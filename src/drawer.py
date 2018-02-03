@@ -116,3 +116,9 @@ for i in range(30000):
         plt.imshow(d[0], cmap='gray')
         plt.show()
         print(i, ls, np.mean(i_ls), np.mean(d_ls))
+
+
+# Generate new handwritten(Written by the machine :D) digits
+RANDOM_CODE = [np.random.normal(0, 1, NUM_LATENS) for _ in range(10)]
+IMAGES = SESS.run(DECODED_IMG, feed_dict={CODED_IMG: RANDOM_CODE, KEEP_PROB: 1.0})
+IMAGES = [np.reshape(IMAGES[i], [28,28]) for i in range(len(IMAGES))]
