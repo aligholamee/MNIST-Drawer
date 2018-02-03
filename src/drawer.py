@@ -122,3 +122,9 @@ for i in range(30000):
 RANDOM_CODE = [np.random.normal(0, 1, NUM_LATENS) for _ in range(10)]
 IMAGES = SESS.run(DECODED_IMG, feed_dict={CODED_IMG: RANDOM_CODE, KEEP_PROB: 1.0})
 IMAGES = [np.reshape(IMAGES[i], [28,28]) for i in range(len(IMAGES))]
+
+for img in IMAGES:
+    plt.figure(figsize=(1,1))
+    plt.axis('off')
+    plt.imshow(img, cmap='gray')
+    
