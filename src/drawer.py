@@ -104,7 +104,7 @@ SESS = tf.Session()
 SESS.run(tf.global_variables_initializer())
 
 # Take the minibatches and feed the session dicitionary
-for i in range(30000):
+for i in range(1500):
     BATCH = [np.reshape(b, [28, 28]) for b in myData.train.next_batch(batch_size=BATCH_SIZE)[0]]
     SESS.run(OPTIMIZER, feed_dict={X_INPUT: BATCH, Y_OUTPUT: BATCH, KEEP_PROB: 0.8})
 
@@ -127,4 +127,5 @@ for img in IMAGES:
     plt.figure(figsize=(1,1))
     plt.axis('off')
     plt.imshow(img, cmap='gray')
+    plt.show()
     
