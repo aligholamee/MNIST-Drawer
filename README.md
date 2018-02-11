@@ -1,4 +1,4 @@
-# MNIST-Drawer
+# MNIST-Drawer-VAE
 <p align="center">
     <img src="https://cdn-images-1.medium.com/max/1600/1*G0V4dz4RKTKGpebeoSWB0A.png">
 </p>
